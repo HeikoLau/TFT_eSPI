@@ -2,7 +2,7 @@
 // This is the command sequence that initialises the SSD2119 driver
 
 { 
-  delay(500);
+  delay(100);
   
   writecommand(SSD2119_VCOMOTP1);                          writedata(0x00); writedata(0x06); // VCOM OTP
   writecommand(SSD2119_OscillationStart);                  writedata(0x00); writedata(0x01); // start Oscillator

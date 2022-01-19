@@ -19,7 +19,9 @@
 
 // Only ONE line below should be uncommented.  Add extra lines and files as needed.
 
-#include <User_Setup.h>           // Default setup is root library folder
+//#include <User_Setup.h>           // Default setup is root library folder
+
+#include <User_Setups/ESP32_SSD2119.h>  // Setup file configured for ESP32 with SSD2119 320x240
 
 //#include <User_Setups/Setup1_ILI9341.h>  // Setup file configured for my ILI9341
 //#include <User_Setups/Setup2_ST7735.h>   // Setup file configured for my ST7735
@@ -211,6 +213,9 @@
 #elif defined (ILI9225_DRIVER)
      #include "TFT_Drivers/ILI9225_Defines.h"
      #define  TFT_DRIVER 0x9225
+#elif defined (SSD2119_DRIVER)
+     #include "TFT_Drivers/SSD2119_Defines.h"
+     #define  TFT_DRIVER 0x2119
                               // <<<<<<<<<<<<<<<<<<<<<<<< ADD NEW DRIVER HERE
                               // XYZZY_init.h and XYZZY_rotation.h must also be added in TFT_eSPI.cpp
 #elif defined (XYZZY_DRIVER)

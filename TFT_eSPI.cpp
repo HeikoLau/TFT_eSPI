@@ -654,6 +654,9 @@ void TFT_eSPI::init(uint8_t tc)
 #elif defined (ILI9225_DRIVER)
      #include "TFT_Drivers/ILI9225_Init.h"
 
+#elif defined (SSD2119_DRIVER)
+     #include "TFT_Drivers/SSD2119_Init.h"
+
 #endif
 
 #ifdef TFT_INVERSION_ON
@@ -741,6 +744,9 @@ void TFT_eSPI::setRotation(uint8_t m)
 
 #elif defined (ILI9225_DRIVER)
      #include "TFT_Drivers/ILI9225_Rotation.h"
+
+#elif defined (SSD2119_DRIVER)
+     #include "TFT_Drivers/SSD2119_Rotation.h"
 
 #endif
 
@@ -3074,6 +3080,27 @@ void TFT_eSPI::setWindow(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
   DC_D; tft_Write_16(y1 | (y0 << 8));
   DC_C; tft_Write_8(TFT_RAMWR);
   DC_D;
+#elif defined (SSD2119_DRIVER)
+  if (rotation & 1) {
+      swap_coord(x0, y0);
+      swap_coord(x1, y1);
+}
+  SPI_BUSY_CHECK;
+  DC_C; tft_Write_8(TFT_CASET1);
+  DC_D; /*tft_Write_16(x0);*/ tft_Write_8(x0 >> 8); tft_Write_8(x0);
+  DC_C; tft_Write_8(TFT_CASET2);
+  DC_D; /*tft_Write_16(x1);*/ tft_Write_8(x1 >> 8); tft_Write_8(x1);
+  DC_C; tft_Write_8(TFT_PASET);
+  DC_D; /*tft_Write_16(y1 | (y0 << 8));*/ tft_Write_8(y1); tft_Write_8(y0);
+
+  DC_C; tft_Write_8(0x4e);
+  DC_D; tft_Write_8(x0 >> 8); tft_Write_8(x0);
+
+  DC_C; tft_Write_8(0x4f);
+  DC_D; tft_Write_8(y0 >> 8); tft_Write_8(y0);
+
+  DC_C; tft_Write_8(TFT_RAMWR);
+  DC_D;
 #else
   #if defined (SSD1963_DRIVER)
     if ((rotation & 0x1) == 0) { swap_coord(x0, y0); swap_coord(x1, y1); }
@@ -3214,6 +3241,8 @@ void TFT_eSPI::readAddrWindow(int32_t xs, int32_t ys, int32_t w, int32_t h)
   // Flush the rx buffer and reset overflow flag
   while (spi_is_readable(SPI_X)) (void)spi_get_hw(SPI_X)->dr;
   spi_get_hw(SPI_X)->icr = SPI_SSPICR_RORIC_BITS;
+
+#elif defined (SSD2119_DRIVER)
 
 #else
   // Column addr set
@@ -3390,6 +3419,30 @@ void TFT_eSPI::drawPixel(int32_t x, int32_t y, uint32_t color)
       DC_D; tft_Write_16(y | (y << 8));
       addr_row = y;
     }
+  #elif defined (SSD2119_DRIVER)
+    // No need to send x if it has not changed (speeds things up)
+    if (addr_col != x) {
+      //DC_C; tft_Write_8(TFT_CASET1);
+      //DC_D; tft_Write_16(x);
+      //DC_C; tft_Write_8(TFT_CASET2);
+      //DC_D; tft_Write_16(x);
+      //DC_C; tft_Write_8(0x4e);
+      //DC_D; /*tft_Write_16(x & 0x1ff);*/ tft_Write_8(x >> 8); tft_Write_8(x);
+      addr_col = x;
+    }
+    DC_C; tft_Write_8(0x4e);
+    DC_D; tft_Write_8(x >> 8); tft_Write_8(x);
+
+    // No need to send y if it has not changed (speeds things up)
+    if (addr_row != y) {
+      //DC_C; tft_Write_8(TFT_PASET);
+      //DC_D; tft_Write_16(y | (y << 8));
+      //DC_C; tft_Write_8(0x4f);
+      //DC_D; /*tft_Write_16(y & 0xff);*/ tft_Write_8(y >> 8); tft_Write_8(y);
+      addr_row = y;
+    }
+    DC_C; tft_Write_8(0x4f);
+    DC_D; tft_Write_8(y >> 8); tft_Write_8(y);
   #else
     // No need to send x if it has not changed (speeds things up)
     if (addr_col != x) {

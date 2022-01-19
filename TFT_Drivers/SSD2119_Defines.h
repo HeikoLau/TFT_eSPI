@@ -19,7 +19,7 @@
 #define TFT_CASET1     SSD2119_HorizontalRAMaddressStartPosition
 #define TFT_CASET2     SSD2119_HorizontalRAMaddressEndPosition
 
-#define TFT_PASET0     SSD2119_VerticalRAMaddressPosition
+#define TFT_PASET      SSD2119_VerticalRAMaddressPosition
 
 #define TFT_RAM_ADDR1  SSD2119_SetGDDRAMx
 #define TFT_RAM_ADDR2  SSD2119_SetGDDRAMy
