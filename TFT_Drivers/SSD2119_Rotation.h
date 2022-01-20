@@ -11,7 +11,7 @@
       _height = _init_height;
       break;
     case 1: // Portrait
-      writedata(0x68); writedata(0x58);
+        writedata(0x68); writedata(0x68);
       _width  = _init_height;
       _height = _init_width;
       break;
@@ -21,8 +21,9 @@
       _height = _init_height;
       break;
     case 3: // Inverted portrait
-      writedata(0x68); writedata(0x68);
+        writedata(0x68); writedata(0x58);
       _width  = _init_height;
       _height = _init_width;
       break;
   }
+

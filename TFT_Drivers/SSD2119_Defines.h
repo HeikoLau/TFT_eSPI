@@ -21,9 +21,6 @@
 
 #define TFT_PASET      SSD2119_VerticalRAMaddressPosition
 
-#define TFT_RAM_ADDR1  SSD2119_SetGDDRAMx
-#define TFT_RAM_ADDR2  SSD2119_SetGDDRAMy
-
 #define TFT_RAMWR      SSD2119_RAMdataWrite
 
 #define TFT_MAD_BGR 0x10

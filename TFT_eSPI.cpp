@@ -3081,17 +3081,46 @@ void TFT_eSPI::setWindow(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
   DC_C; tft_Write_8(TFT_RAMWR);
   DC_D;
 #elif defined (SSD2119_DRIVER)
-  if (rotation & 1) {
+
+  switch (rotation)
+  {
+  case 0:
+      x0 = x0;
+      x1 = x1;
+      y0 = y0;
+      y1 = y1;
+      break;
+  case 1:
       swap_coord(x0, y0);
       swap_coord(x1, y1);
+      x0 = _height - x0;
+      x1 = _height - x1;
+      swap_coord(x0, x1);
+      break;
+  case 2:
+      x0 = _width - x0;
+      x1 = _width - x1;
+      y0 = _height - y0;
+      y1 = _height - y1;
+      swap_coord(x0, x1);
+      swap_coord(y0, y1);
+      break;
+  case 3:
+      swap_coord(x0, y0);
+      swap_coord(x1, y1);
+      y0 = _width - y0;
+      y1 = _width - y1;
+      swap_coord(y0, y1);
+      break;
   }
+
   SPI_BUSY_CHECK;
   DC_C; tft_Write_8(TFT_CASET1);
-  DC_D; /*tft_Write_16(x0);*/ tft_Write_8(x0 >> 8); tft_Write_8(x0);
+  DC_D; tft_Write_8(x0 >> 8); tft_Write_8(x0);
   DC_C; tft_Write_8(TFT_CASET2);
-  DC_D; /*tft_Write_16(x1);*/ tft_Write_8(x1 >> 8); tft_Write_8(x1);
+  DC_D; tft_Write_8(x1 >> 8); tft_Write_8(x1);
   DC_C; tft_Write_8(TFT_PASET);
-  DC_D; /*tft_Write_16(y1 | (y0 << 8));*/ tft_Write_8(y1); tft_Write_8(y0);
+  DC_D; tft_Write_8(y1); tft_Write_8(y0);
 
   DC_C; tft_Write_8(SSD2119_SetGDDRAMx);
   DC_D; tft_Write_8(x0 >> 8); tft_Write_8(x0);
@@ -3420,19 +3449,29 @@ void TFT_eSPI::drawPixel(int32_t x, int32_t y, uint32_t color)
       addr_row = y;
     }
   #elif defined (SSD2119_DRIVER)
-    // No need to send x if it has not changed (speeds things up)
-    if (addr_col != x) {
-      addr_col = x;
-      DC_C; tft_Write_8(SSD2119_SetGDDRAMx);
-      DC_D; tft_Write_8(x >> 8); tft_Write_8(x);
+    switch (rotation)
+    {
+    case 0:
+        x = x;
+        y = y;
+        break;
+    case 1:
+        swap_coord(x, y);
+        x = _height - x;
+        break;
+    case 2:
+        x = _width - x;
+        y = _height - y;
+        break;
+    case 3:
+        swap_coord(x, y);
+        y = _width - y;
+        break;
     }
-
-    // No need to send y if it has not changed (speeds things up)
-    if (addr_row != y) {
-      addr_row = y;
-      DC_C; tft_Write_8(SSD2119_SetGDDRAMy);
-      DC_D; tft_Write_8(y >> 8); tft_Write_8(y);
-    }
+    DC_C; tft_Write_8(SSD2119_SetGDDRAMx);
+    DC_D; tft_Write_8(x >> 8); tft_Write_8(x);
+    DC_C; tft_Write_8(SSD2119_SetGDDRAMy);
+    DC_D; tft_Write_8(y >> 8); tft_Write_8(y);
   #else
     // No need to send x if it has not changed (speeds things up)
     if (addr_col != x) {
