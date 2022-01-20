@@ -3084,7 +3084,7 @@ void TFT_eSPI::setWindow(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
   if (rotation & 1) {
       swap_coord(x0, y0);
       swap_coord(x1, y1);
-}
+  }
   SPI_BUSY_CHECK;
   DC_C; tft_Write_8(TFT_CASET1);
   DC_D; /*tft_Write_16(x0);*/ tft_Write_8(x0 >> 8); tft_Write_8(x0);
@@ -3093,10 +3093,10 @@ void TFT_eSPI::setWindow(int32_t x0, int32_t y0, int32_t x1, int32_t y1)
   DC_C; tft_Write_8(TFT_PASET);
   DC_D; /*tft_Write_16(y1 | (y0 << 8));*/ tft_Write_8(y1); tft_Write_8(y0);
 
-  DC_C; tft_Write_8(0x4e);
+  DC_C; tft_Write_8(SSD2119_SetGDDRAMx);
   DC_D; tft_Write_8(x0 >> 8); tft_Write_8(x0);
 
-  DC_C; tft_Write_8(0x4f);
+  DC_C; tft_Write_8(SSD2119_SetGDDRAMy);
   DC_D; tft_Write_8(y0 >> 8); tft_Write_8(y0);
 
   DC_C; tft_Write_8(TFT_RAMWR);
@@ -3422,27 +3422,17 @@ void TFT_eSPI::drawPixel(int32_t x, int32_t y, uint32_t color)
   #elif defined (SSD2119_DRIVER)
     // No need to send x if it has not changed (speeds things up)
     if (addr_col != x) {
-      //DC_C; tft_Write_8(TFT_CASET1);
-      //DC_D; tft_Write_16(x);
-      //DC_C; tft_Write_8(TFT_CASET2);
-      //DC_D; tft_Write_16(x);
-      //DC_C; tft_Write_8(0x4e);
-      //DC_D; /*tft_Write_16(x & 0x1ff);*/ tft_Write_8(x >> 8); tft_Write_8(x);
       addr_col = x;
+      DC_C; tft_Write_8(SSD2119_SetGDDRAMx);
+      DC_D; tft_Write_8(x >> 8); tft_Write_8(x);
     }
-    DC_C; tft_Write_8(0x4e);
-    DC_D; tft_Write_8(x >> 8); tft_Write_8(x);
 
     // No need to send y if it has not changed (speeds things up)
     if (addr_row != y) {
-      //DC_C; tft_Write_8(TFT_PASET);
-      //DC_D; tft_Write_16(y | (y << 8));
-      //DC_C; tft_Write_8(0x4f);
-      //DC_D; /*tft_Write_16(y & 0xff);*/ tft_Write_8(y >> 8); tft_Write_8(y);
       addr_row = y;
+      DC_C; tft_Write_8(SSD2119_SetGDDRAMy);
+      DC_D; tft_Write_8(y >> 8); tft_Write_8(y);
     }
-    DC_C; tft_Write_8(0x4f);
-    DC_D; tft_Write_8(y >> 8); tft_Write_8(y);
   #else
     // No need to send x if it has not changed (speeds things up)
     if (addr_col != x) {
