@@ -16,7 +16,7 @@
 #ifndef _TFT_eSPIH_
 #define _TFT_eSPIH_
 
-#define TFT_ESPI_VERSION "2.4.35"
+#define TFT_ESPI_VERSION "2.4.42"
 
 // Bit level feature flags
 // Bit 0 set: viewport capability
@@ -611,7 +611,7 @@ class TFT_eSPI : public Print { friend class TFT_eSprite; // Sprite class has ac
 
            // Support function to UTF8 decode and draw characters piped through print stream
   size_t   write(uint8_t);
-  size_t   write(const uint8_t *buf, size_t len);
+  // size_t   write(const uint8_t *buf, size_t len);
 
            // Used by Smooth font class to fetch a pixel colour for the anti-aliasing
   void     setCallback(getColorCallback getCol);
@@ -845,6 +845,11 @@ class TFT_eSPI : public Print { friend class TFT_eSprite; // Sprite class has ac
   bool     _psram_enable; // Enable PSRAM use for library functions (TBD) and Sprites
 
   uint32_t _lastColor; // Buffered value of last colour used
+
+#if defined (SSD1963_DRIVER) 
+  uint16_t Cswap;      // Swap buffer for SSD1963
+  uint8_t r6, g6, b6;  // RGB buffer for SSD1963
+#endif
 
 #ifdef LOAD_GFXFF
   GFXfont  *gfxFont;

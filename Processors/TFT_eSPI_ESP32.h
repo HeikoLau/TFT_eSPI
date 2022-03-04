@@ -38,10 +38,6 @@
   #define SUPPORT_TRANSACTIONS
 #endif
 
-#ifndef tft_Write_16N(C)
-  #define tft_Write_16N(C) tft_Write_16(C)
-#endif
-
 /*
 ESP32:
 FSPI not defined
@@ -378,7 +374,7 @@ SPI3_HOST = 2
                             GPIO.out_w1tc = clr_mask; GPIO.out_w1ts = set_mask((uint8_t) (((C) & 0x001F)<< 3)); WR_H
 
     // 18 bit color write with swapped bytes
-    #define tft_Write_16S(C) uint16_t Cswap = ((C) >>8 | (C) << 8); tft_Write_16(Cswap)
+    #define tft_Write_16S(C) Cswap = ((C) >>8 | (C) << 8); tft_Write_16(Cswap)
 
   #else
 
@@ -562,6 +558,10 @@ SPI3_HOST = 2
   #define tft_Write_32D(C) TFT_WRITE_BITS((uint16_t)((C)<<8 | (C)>>8)<<16 | (uint16_t)((C)<<8 | (C)>>8), 32)
 
 //*/
+#endif
+
+#ifndef tft_Write_16N
+  #define tft_Write_16N tft_Write_16
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////
