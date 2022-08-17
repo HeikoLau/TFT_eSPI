@@ -676,6 +676,7 @@ void TFT_eSPI::init(uint8_t tc)
     pinMode(TFT_RST, OUTPUT);
   #endif
   if (TFT_RST >= 0) {
+    writecommand(0x00); // Put SPI bus in known state for TFT with CS tied low
     digitalWrite(TFT_RST, HIGH);
     delay(5);
     digitalWrite(TFT_RST, LOW);
@@ -3834,7 +3835,7 @@ constexpr float LoAlphaTheshold  = 1.0/32.0;
 constexpr float HiAlphaTheshold  = 1.0 - LoAlphaTheshold;
 
 /***************************************************************************************
-** Function name:           drawPixel (aplha blended)
+** Function name:           drawPixel (alpha blended)
 ** Description:             Draw a pixel blended with the screen or bg pixel colour
 ***************************************************************************************/
 uint16_t TFT_eSPI::drawPixel(int32_t x, int32_t y, uint32_t color, uint8_t alpha, uint32_t bg_color)
